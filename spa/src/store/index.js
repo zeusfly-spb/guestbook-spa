@@ -7,6 +7,7 @@ export const store = new Vuex.Store({
     state: {
         authUser: null,
         status: null,
+        token: null
     },
     actions: {
         logOut ({commit}) {
@@ -18,8 +19,7 @@ export const store = new Vuex.Store({
                 Vue.axios.post('/api/login', {email: query.email, password: query.password})
                     .then(res => {
                         let token = res.data.success.token
-                        Cookies.set('passport-token', token)
-                        Vue.axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
+                        commit('SAVE_TOKEN', token)
                         dispatch('setAuthUser')
                         resolve (res)
                     })
@@ -36,6 +36,18 @@ export const store = new Vuex.Store({
         }
     },
     mutations: {
+        SAVE_TOKEN (state, token) {
+            let now = new Date()
+            now.setMinutes(1 + now.getMinutes())
+            Cookies.set('passport-token', token, {expires: now, path: '/'})
+            setInterval(() => {
+                let now = new Date()
+                now.setMinutes(1 + now.getMinutes())
+                Cookies.set('passport-token', token, {expires: now, path: '/'})
+            }, 30000)
+            Vue.axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
+            state.token = token
+        },
         SET_STATUS (state, status) {
             state.status = status
         },

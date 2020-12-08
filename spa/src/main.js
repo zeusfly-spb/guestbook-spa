@@ -30,6 +30,15 @@ Vue.axios.interceptors.response.use(
 )
 
 const token = Cookies.get('passport-token')
+if (token) {
+  store.commit('SAVE_TOKEN', token)
+  store.dispatch('setAuthUser')    
+} else {
+  store.commit('AUTH_LOGOUT')
+}
+
+/**
+const token = Cookies.get('passport-token')
      if (token) {
          Vue.axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
          store.dispatch('setAuthUser')
@@ -38,6 +47,7 @@ const token = Cookies.get('passport-token')
          store.dispatch('logOut')
              .then(() => router.push('/login'))
      }
+*/
 
 new Vue({
     router,
