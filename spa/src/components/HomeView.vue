@@ -23,10 +23,25 @@
                 >
                     Добавить заметку
                 </button>
+                <div
+                    v-for="post in posts"
+                    :key="post.id"
+                    class="post"
+                >
+                    <span
+                        class="post-text"
+                    >
+                        {{ post && post .text}}
+                    </span>
+                    <span class="green-text">
+                        {{ post && post.user && post.user.name }}                    
+                    </span>
+                </div>
             </div>
             <modal             
                 v-show="dialog"
                 @close="hideDialog"
+                @addPost="addPost"
             />
         </div>
     </div>
@@ -35,6 +50,7 @@
     import Modal from './Modal'
     export default {
         data: () => ({
+            posts: [],
             data: null,
             dialog: false
         }),
@@ -47,6 +63,13 @@
             }
         },
         methods: {
+            getPosts () {
+                this.axios.post('/api/get_posts')
+                    .then(res => this.posts = res.data.reverse())
+            },
+            addPost (post) {
+                this.posts.unshift(post)                
+            },
             hideDialog () {
                 this.dialog = false
             },
@@ -65,6 +88,7 @@
         },
         mounted () {
             this.getData()
+            this.getPosts()
         },
         components: {
             Modal
@@ -72,7 +96,19 @@
     }
 </script>
 <style scoped>
-  .work-place {
+    .post-text {
+        color: #607D8B;        
+    }
+    .post {
+        display: flex;
+        flex-direction: row;
+        border: 1px solid #47a7f5;
+        border-radius: .5em;
+        margin-top: .5em;
+        padding: .5em;
+        justify-content: space-between;
+    }
+    .work-place {
         margin-top: 1em;
     }
     i {color: rgba(0,0,0,.54);}

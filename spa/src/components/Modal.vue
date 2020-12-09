@@ -7,9 +7,9 @@
         aria-describedby="modalDescription"
       >
         <header
-          :class="{'update-header' : editingNote, 'modal-header': !editingNote}"
+          class="modal-header"
         >
-            {{ editingNote ? 'Редактирование заметки' : 'Новая заметка' }}
+            Новая заметка
         </header>
         <section
           class="modal-body"
@@ -20,6 +20,19 @@
           ref='textarea'
           @keyup.esc="close"
         />
+        <div
+        class="blue-text clickable"
+          @click="$refs.fileInput.click()"
+        >
+          Добавить файл
+        </div>
+        <input type="file"
+            name="file_name"
+            ref="fileInput"
+            accept="*/*"
+            @change="loadFile"
+            style="display: none"
+        >
         </section>
         <footer class="modal-footer">
             <div>
@@ -31,22 +44,12 @@
                     Отмена
                 </button>
                 <button
-                    v-if="!editingNote"
                     type="button"
                     class="ns-button bg-green"
                     :disabled="!valid"
-                    @click="addNote"
+                    @click="createPost"
                 >
                     Добавить
-                </button>
-                <button
-                    v-if="editingNote"
-                    type="button"
-                    class="ns-button btn-blue"
-                    :disabled="!valid"
-                    @click="updateNote"
-                >
-                    Сохранить
                 </button>
             </div>
         </footer>
@@ -61,12 +64,11 @@
           note: Object
         },
         data: () => ({
+          fileReader: null,
+          file: null,
           text: ''            
         }),
         computed: {
-          editingNote () {
-            return this.$store.state.editingNote
-          },
           authUser () {
             return this.$store.state.authUser
           },
@@ -77,20 +79,35 @@
             return this.$store.state.dialog
           }
         },
+        created () {
+          this.fileReader = new FileReader()
+          this.fileReader.onload = (e)=> {
+              this.$refs.fileInput = e.target.result
+          }
+        },
         methods: {
-            updateNote () {
-              this.$store.dispatch('updateNote', {
-                id: this.editingNote.id,
-                text: this.text
-              })
-                .then(() => this.close())
-                .catch(e => alert(e))              
+            loadFile () {
+              this.fileReader.readAsDataURL(this.$refs.fileInput.files[0])              
+              this.file = this.$refs.fileInput.files[0]
+            },
+            createPost () {
+                let data = new FormData
+                data.append('text', this.text)
+                data.append('user_id',this.authUser.id)
+                if (this.file) {
+                  data.append('file', this.file)
+                }
+                this.axios.post('/api/create_post', data)
+                  .then((res) => {
+                    this.$emit('addPost', res.data)
+                    this.close()
+                  })
+                  .catch(e => console.error(e))
             },
             resetInputs () {
               this.text = ''
             },
             close () {
-                this.$store.commit('SET_EDITING_NOTE', null)
                 this.text = ''
                 this.$emit('close')
             },
@@ -101,23 +118,6 @@
                   user_id: this.authUser.id
                 }).then(this.close())
             }
-        },
-        mounted () {
-          if (this.note) {
-            this.text = this.note.text
-          }
-        },
-        watch: {
-          editingNote (val) {
-            const action = () => {
-              this.text = val.text
-              this.$refs.textarea.focus()
-            }
-            val ? action() : null
-          },
-          dialog (val) {
-            !val ? this.resetInputs() : this.$refs.textarea.focus()
-          }
         }
     }
 </script>
