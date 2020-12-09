@@ -1,3 +1,4 @@
+const Cookies = require('js-cookie')
 import Vue from 'vue'
 import Vuex from 'vuex'
 
@@ -32,7 +33,7 @@ export const store = new Vuex.Store({
         setAuthUser ({commit}) {
             Vue.axios.post('/api/details')
                 .then(res => commit('SET_AUTH_USER', res.data.success))
-                .catch(e => commit('AUTH_LOGOUT'))
+                .catch(() => commit('AUTH_LOGOUT'))
         }
     },
     mutations: {

@@ -28,18 +28,22 @@ const routes = [
     {
         path: '/register',
         component: RegisterView,
-        meta: {title: 'Регистрация', auth: false}
+        meta: {title: 'Регистрация'}
     },
     {
         path: '/login',
         component: LoginView,
-        meta: {title: 'Авторизация', auth: false}
+        meta: {title: 'Авторизация'}
     },
     {
         path: '/home',
         component: HomeView,
-        meta: {title: 'Личный кабинет', auth: true}
+        meta: {title: 'Гостевая книга'}
     },
+    {
+        path: '*',
+        redirect: '/login'
+    }
 ]
 
 export function createRouter() {
@@ -47,7 +51,7 @@ export function createRouter() {
         routes
     })
     router.beforeEach((to, from, next) => {
-        document.title = to.meta.title + ' - API AUTH ZEUSFLY'
+        document.title = to.meta.title
         next()
     })
     return router
