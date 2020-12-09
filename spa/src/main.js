@@ -29,6 +29,7 @@ Vue.axios.interceptors.response.use(
     }
 )
 
+store.commit('SET_BASE_URL', process.env.VUE_APP_BASE_URL)
 const token = Cookies.get('passport-token')
 if (token) {
   store.commit('SAVE_TOKEN', token)

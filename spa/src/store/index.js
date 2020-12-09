@@ -6,6 +6,7 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
     state: {
+        baseUrl: null,
         authUser: null,
         status: null,
         token: null
@@ -37,6 +38,9 @@ export const store = new Vuex.Store({
         }
     },
     mutations: {
+        SET_BASE_URL (state, url) {
+            state.baseUrl = url
+        },
         SAVE_TOKEN (state, token) {
             let now = new Date()
             now.setMinutes(1 + now.getMinutes())

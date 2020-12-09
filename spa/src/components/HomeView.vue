@@ -28,15 +28,26 @@
                     :key="post.id"
                     class="post"
                 >
-                    <span
-                        class="post-text"
+                    <div
+                        class="text-place"
                     >
-                        {{ post && post .text}}
-                    </span>
-                    <span class="green-text">
-                        {{ post && post.user && post.user.name }}                    
-                    </span>
+                        <span
+                            class="post-text"
+                        >
+                            {{ post && post .text}}
+                        </span>
+                        <div class="green-text">
+                            {{ post && post.user && post.user.name }}                    
+                        </div>
+                    </div>
+                    <a
+                        v-if="post.file_path"
+                        :href="`${baseUrl}/${post.file_path}`"
+                    >
+                        {{ post && post.file_name}}
+                    </a>
                 </div>
+                
             </div>
             <modal             
                 v-show="dialog"
@@ -55,6 +66,9 @@
             dialog: false
         }),
         computed: {
+            baseUrl () {
+                return this.$store.state.baseUrl
+            },
             userName () {
                 return this.user && this.user.name || ''
             },
@@ -96,17 +110,21 @@
     }
 </script>
 <style scoped>
+    .text-place {
+        display: flex;
+        flex-direction: row!important;
+        justify-content: space-between;
+    }
     .post-text {
         color: #607D8B;        
     }
     .post {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         border: 1px solid #47a7f5;
         border-radius: .5em;
         margin-top: .5em;
         padding: .5em;
-        justify-content: space-between;
     }
     .work-place {
         margin-top: 1em;

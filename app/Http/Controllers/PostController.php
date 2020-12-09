@@ -23,8 +23,10 @@ class PostController extends Controller
                 'public/files', $fileName
             );
             $inputs['file_path'] = 'storage/files/' . $fileName;
+            $inputs['file_name'] = $request->file->getClientOriginalName();
         }
         $post = Post::create($inputs);
+        $post->load('user');
         return response()->json($post->toArray()) ;
     }
 }
