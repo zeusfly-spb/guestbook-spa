@@ -15,7 +15,7 @@
           class="modal-body"
           id="modalDescription"
         >
-        <textarea cols="50" rows="20"
+        <textarea cols="50" rows="5"
           v-model="text"
           ref='textarea'
           @keyup.esc="close"
@@ -92,7 +92,7 @@
             },
             createPost () {
                 let data = new FormData
-                data.append('text', this.text)
+                data.append('text', this.tex)
                 data.append('user_id',this.authUser.id)
                 if (this.file) {
                   data.append('file', this.file)
